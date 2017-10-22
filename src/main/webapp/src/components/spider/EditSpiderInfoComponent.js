@@ -312,7 +312,8 @@ export default class EditSpiderInfoComponent extends React.Component{
         this.showFormDetail();
     }
     urlArrayToString(urlArray){
-        if(urlArray==null) return null;
+        if(urlArray==null || urlArray.length<=0) return urlArray;
+
         var result = urlArray.map(function(item){
             return "'"+item+"'"
         });

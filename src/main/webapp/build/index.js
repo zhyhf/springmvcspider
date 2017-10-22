@@ -1204,6 +1204,16 @@ var showRecord = function showRecord(record) {
     };
 };
 
+var receiveStartPosts = function receiveStartPosts(startResult) {
+    return function (dispatch) {
+        if (startResult.success) {
+            dispatch(showInfo('success', "启动成功", "任务ID为:" + startResult.result));
+        } else {
+            dispatch(showInfo('error', "启动失败", "添加失败，错误信息:" + startResult.errorMsg));
+        }
+    };
+};
+
 var startTemplate = function startTemplate(fieldsValue) {
     return function (dispatch) {
         var param = { method: 'POST',
@@ -1215,7 +1225,7 @@ var startTemplate = function startTemplate(fieldsValue) {
         return fetch('/commons/spider/start/', param).then(function (response, fieldsValue) {
             return response.json();
         }).then(function (json) {
-            return dispatch(receivePosts(json));
+            return dispatch(receiveStartPosts(json));
         }).catch(function (err) {
             return dispatch(postError(err));
         });
@@ -1280,7 +1290,7 @@ var showInfo = _messageActions2.default.actions.showInfo;
 
 var receivePosts = function receivePosts(value) {
     return function (dispatch) {
-        if (value.errorMsg == null) {
+        if (value.success) {
             dispatch(showInfo('success', "添加成功", "添加成功，模板ID为:" + value.result));
             window.location.hash = "listSpiderInfo";
         } else {
@@ -1588,7 +1598,7 @@ var AllListComponent = function (_React$Component) {
                             { href: 'javascript:void(0)', onClick: function (record) {
                                     showRecord(record);
                                 }.bind(_this2, record) },
-                            'show'
+                            '\u67E5\u770B\u7ED3\u679C'
                         )
                     );
                 }
@@ -1605,7 +1615,7 @@ var AllListComponent = function (_React$Component) {
                             { href: 'javascript:void(0)', onClick: function (record) {
                                     editTemplate(record);
                                 }.bind(_this2, record) },
-                            'edit'
+                            '\u7F16\u8F91'
                         )
                     );
                 }
@@ -1622,7 +1632,7 @@ var AllListComponent = function (_React$Component) {
                             { href: 'javascript:void(0)', onClick: function (record) {
                                     deleteTemplateById(record.key);
                                 }.bind(_this2, record) },
-                            'delete'
+                            '\u5220\u9664'
                         )
                     );
                 }
@@ -2229,7 +2239,8 @@ var EditSpiderInfoComponent = function (_React$Component2) {
     }, {
         key: 'urlArrayToString',
         value: function urlArrayToString(urlArray) {
-            if (urlArray == null) return null;
+            if (urlArray == null || urlArray.length <= 0) return urlArray;
+
             var result = urlArray.map(function (item) {
                 return "'" + item + "'";
             });

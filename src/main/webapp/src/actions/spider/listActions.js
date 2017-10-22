@@ -122,6 +122,15 @@ const showRecordDetail = (record) => (
     dispatch(showInfo('success',"get records success","get records detail"));
 };
 
+const receiveStartPosts = (startResult) => dispatch => {
+     if(startResult.success){
+        dispatch(showInfo('success',"启动成功","任务ID为:"+startResult.result));
+    }
+    else{
+        dispatch(showInfo('error',"启动失败","添加失败，错误信息:"+startResult.errorMsg));
+    }
+}
+
 const startTemplate = (fieldsValue) =>(dispatch)  => {
     var param = { method: 'POST',
         body:JSON.stringify(fieldsValue),
@@ -133,7 +142,7 @@ const startTemplate = (fieldsValue) =>(dispatch)  => {
     .then(function (response,fieldsValue) {
         return response.json();
     }).then(function (json) {
-        return dispatch(receivePosts(json));
+        return dispatch(receiveStartPosts(json));
     }).catch(function (err) {
         return dispatch(postError(err));
     });

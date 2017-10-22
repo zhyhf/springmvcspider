@@ -9,7 +9,7 @@ const showInfo=messageActions.actions.showInfo;
 
 
 const receivePosts = (value) => dispatch => {
-    if(value.errorMsg==null){
+    if(value.success){
         dispatch(showInfo('success',"添加成功","添加成功，模板ID为:"+value.result));
         window.location.hash = "listSpiderInfo";
     }

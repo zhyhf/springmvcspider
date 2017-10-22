@@ -1,6 +1,7 @@
 package com.gs.spider.controller.commons.spider;
 
 import com.gs.spider.controller.AsyncGatherBaseController;
+import com.gs.spider.model.commons.SpiderInfo;
 import com.gs.spider.model.commons.Webpage;
 import com.gs.spider.model.utils.ResultBundle;
 import com.gs.spider.model.utils.ResultListBundle;
@@ -12,10 +13,8 @@ import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -48,9 +47,21 @@ public class CommonsSpiderController extends AsyncGatherBaseController {
      */
     @RequestMapping(value = "start", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json")
     @ResponseBody
-    public ResultBundle<String> start(String spiderInfoJson) {
-        return spiderService.start(spiderInfoJson);
+    public ResultBundle<String> start(@RequestBody SpiderInfo spiderInfo, UriComponentsBuilder ucb) {
+        return spiderService.start(spiderInfo);
     }
+
+//    /**
+//     * 启动爬虫
+//     *
+//     * @param spiderInfoJson 使用json格式进行序列化的spiderinfo
+//     * @return 任务id
+//     */
+//    @RequestMapping(value = "start", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json")
+//    @ResponseBody
+//    public ResultBundle<String> start(String spiderInfoJson) {
+//        return spiderService.start(spiderInfoJson);
+//    }
 
     /**
      * 停止爬虫

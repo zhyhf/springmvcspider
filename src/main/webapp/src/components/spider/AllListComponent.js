@@ -91,7 +91,7 @@ export default class AllListComponent extends React.Component{
                     <span>
                         <a href="javascript:void(0)" onClick={function(record){
                                 showRecord(record)
-                        }.bind(this, record)}>show</a>
+                        }.bind(this, record)}>查看结果</a>
                     </span>
                 )
             },
@@ -103,7 +103,7 @@ export default class AllListComponent extends React.Component{
                         <span>
                         <a href="javascript:void(0)" onClick={function(record){
                             editTemplate(record)
-                        }.bind(this, record)}>edit</a>
+                        }.bind(this, record)}>编辑</a>
                         </span>
                     )
             },
@@ -115,7 +115,7 @@ export default class AllListComponent extends React.Component{
                         <span>
                         <a href="javascript:void(0)" onClick={function(record){
                             deleteTemplateById(record.key)
-                        }.bind(this, record)}>delete</a>
+                        }.bind(this, record)}>删除</a>
                         </span>
                     )
             },
