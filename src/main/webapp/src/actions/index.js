@@ -19,7 +19,11 @@ export const getListDatas=listActions.actions.getListDatas;
 export const showRecord=listActions.actions.showRecord;
 export const getAllTemplates=listActions.actions.getAllTemplates;
 export const deleteTemplateById=listActions.actions.deleteTemplateById;
+export const startTemplate=listActions.actions.startTemplate;
 
 //editSpiderInfo
 export const saveFormData=editSpiderInfoActions.actions.saveFormData;
 export const showAllSeting=editSpiderInfoActions.actions.showAllSeting;
+export const editTemplate=editSpiderInfoActions.actions.editTemplate;
+export const updateTemplate=editSpiderInfoActions.actions.updateTemplate;
+

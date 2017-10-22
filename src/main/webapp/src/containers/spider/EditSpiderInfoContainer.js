@@ -3,18 +3,25 @@
  */
 import { connect } from 'react-redux'
 import EditSpiderInfoComponent from '../../components/spider/EditSpiderInfoComponent'
-import { saveFormData,showInfo,hideInfo,showAllSeting} from '../../actions'
+import { saveFormData,updateTemplate,showInfo,hideInfo,showAllSeting} from '../../actions'
 const mapStateToProps = (state) => ({
     msg:state.msg,
     visible:state.visible,
     notifyIcon:state.notifyIcon,
     notifyTitle:state.notifyTitle,
     formDetail:state.formDetail,
-    formVisiable:state.formVisiable
+    formVisiable:state.formVisiable,
+    template:state.template
 });
 const mapDispatchToProps = (dispatch) => ({
     saveFormData:(fieldsValue)=>{
-        dispatch(saveFormData(fieldsValue))
+        if(fieldsValue.id!=undefined &&  fieldsValue.id!=""){
+            dispatch(updateTemplate(fieldsValue));
+        }
+        else {
+            dispatch(saveFormData(fieldsValue))
+        }
+        
     },
     showAllSeting:()=>{
     dispatch(showAllSeting());

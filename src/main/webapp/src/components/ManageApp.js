@@ -13,7 +13,7 @@ const ManageApp = () => (
         <Router history={hashHistory}>
             <Route path="/" component={Home}>
                 <Route path="TableContainer" component={TableContainer} />
-                <Route path="list" component={AllListContainer} />
+                <Route path="listSpiderInfo" component={AllListContainer} />
                 <Route path="editSpiderInfo" component={EditSpiderInfoContainer} />
             </Route>
         </Router>

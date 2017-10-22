@@ -21,8 +21,18 @@ const formVisiable = (state=false, action) => {
     }
 };
 
+const template = (state=null, action) => {
+    switch (action.type) {
+        case types.INIT_TEMPLATE:
+            return action.template;
+        default:
+            return state
+    }
+};
+
 
 module.exports.reducers={
     formDetail:formDetail,
-    formVisiable:formVisiable
+    formVisiable:formVisiable,
+    template:template
 };

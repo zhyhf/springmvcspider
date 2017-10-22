@@ -2,7 +2,7 @@
  * Created by Administrator on 2017/9/17.
  */
 import React from 'react'
-import {Modal, Table, Icon, Form, Input, Button, Select, Switch,Checkbox,message,notification } from 'antd';
+import {Modal, Table, Icon, Form, Input, InputNumber,Button, Select, Switch,Checkbox,message,notification } from 'antd';
 import classNames from 'classnames';
 import $ from 'jquery';          //jquery
 const FormItem = Form.Item;
@@ -22,7 +22,7 @@ class EditSpiderInfoForm extends React.Component{
             <FormItem {...formItemLayout} label="ID" hasFeedback>
                 {getFieldDecorator('id', { rules: [{ required: false, message: '请不要手动赋值', whitespace: true }],
                 })
-                (<Input  />)
+                (<Input disabled placeholder="请不要手动赋值" />)
             }
             </FormItem>
 
@@ -54,9 +54,8 @@ class EditSpiderInfoForm extends React.Component{
     }
     </FormItem>
         <FormItem {...formItemLayout} label="timeout" hasFeedback>
-        {getFieldDecorator('timeout', { rules: [{ required: false, message: '', whitespace: true }],
-        })
-        (<Input  />)
+        {getFieldDecorator('timeout')
+        (<Input />)
     }
     </FormItem>
 
@@ -303,10 +302,41 @@ export default class EditSpiderInfoComponent extends React.Component{
         const { showAllSeting } = this.props;
         showAllSeting();
     }
+    componentDidMount(){
+         const { template } = this.props;
+        this.initTemplate(template);
+    }
     componentDidUpdate(){
+        
         this.info();
         this.showFormDetail();
     }
+    urlArrayToString(urlArray){
+        if(urlArray==null) return null;
+        var result = urlArray.map(function(item){
+            return "'"+item+"'"
+        });
+        var result2 = result.reduce(function(prev,cur,index,array){
+           return prev+','+cur;
+        });
+        var result3='['+result2+']';
+        return result3;
+    }
+
+    initTemplate(template){
+        if(template==null) return;
+        template.startURL=this.urlArrayToString(template.startURL);
+        template.callbackURL=this.urlArrayToString(template.callbackURL);
+        template.thread=template.thread.toString();
+        template.retry=template.retry.toString();
+        template.maxPageGather=template.maxPageGather.toString();
+        template.timeout=template.timeout.toString();
+        template.sleep=template.sleep.toString();
+        this.refs.editForm.setFieldsValue(template);
+    }
+
+    
+
     info ()  {
         const { visible,msg,hideInfo,notifyTitle,notifyIcon } = this.props;
         if(visible){

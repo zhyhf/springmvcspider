@@ -77,7 +77,7 @@ public class TemplateController extends BaseController
     @RequestMapping(value = "save",method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<ResultBundle<String>> saveTemplate(@RequestBody SpiderInfo spiderInfo, UriComponentsBuilder ucb)
     {
-        logger.debug("=============spiderInfo======:"+"\r\n"+
+        logger.debug("=============create spiderInfo======:"+"\r\n"+
 
                 " id:"+spiderInfo.getId()+"\r\n"+
                 " siteName:"+spiderInfo.getSiteName()+"\r\n"+
@@ -126,6 +126,69 @@ public class TemplateController extends BaseController
         );
 
         ResultBundle<String> resultBundle=spiderInfoService.index(spiderInfo);
+        //logger.debug(resultBundle.getTraceId());
+        return new ResponseEntity<ResultBundle<String>>(resultBundle, HttpStatus.OK);
+    }
+
+
+    /**
+     * 更新模板
+     *ResponseEntity<List<Template>>
+     * @param spiderInfo 使用json格式进行序列化的spiderinfo
+     * @return 模板id
+     */
+    @RequestMapping(value = "update",method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public ResponseEntity<ResultBundle<String>> updateTemplate(@RequestBody SpiderInfo spiderInfo, UriComponentsBuilder ucb)
+    {
+        logger.debug("=============update spiderInfo======:"+"\r\n"+
+
+                " id:"+spiderInfo.getId()+"\r\n"+
+                " siteName:"+spiderInfo.getSiteName()+"\r\n"+
+                " domain:"+spiderInfo.getDomain()+"\r\n"+
+                " contentReg:"+spiderInfo.getContentReg()+"\r\n"+
+                " contentXPath:"+spiderInfo.getContentXPath()+"\r\n"+
+
+                " titleReg:"+spiderInfo.getTitleReg()+"\r\n"+
+                " titleXPath:"+spiderInfo.getTitleXPath()+"\r\n"+
+                " categoryReg:"+spiderInfo.getCategoryReg()+"\r\n"+
+                " categoryXPath:"+spiderInfo.getCategoryXPath()+"\r\n"+
+                " defaultCategory:"+spiderInfo.getDefaultCategory()+"\r\n"+
+
+                " urlReg:"+spiderInfo.getUrlReg()+"\r\n"+
+                " charset:"+spiderInfo.getCharset()+"\r\n"+
+                " publishTimeXPath:"+spiderInfo.getPublishTimeXPath()+"\r\n"+
+                " publishTimeReg:"+spiderInfo.getPublishTimeReg()+"\r\n"+
+                " publishTimeFormat:"+spiderInfo.getPublishTimeFormat()+"\r\n"+
+
+                " lang:"+spiderInfo.getLang()+"\r\n"+
+                " country:"+spiderInfo.getCountry()+"\r\n"+
+                " userAgent:"+spiderInfo.getUserAgent()+"\r\n"+
+                " proxyHost:"+spiderInfo.getProxyHost()+"\r\n"+
+                " proxyPort:"+spiderInfo.getProxyPort()+"\r\n"+
+
+                " proxyUsername:"+spiderInfo.getProxyUsername()+"\r\n"+
+                " proxyPassword:"+spiderInfo.getProxyPassword()+"\r\n"+
+                " thread:"+spiderInfo.getThread()+"\r\n"+
+                " retry:"+spiderInfo.getRetry()+"\r\n"+
+                " sleep:"+spiderInfo.getSleep()+"\r\n"+
+
+                " maxPageGather:"+spiderInfo.getMaxPageGather()+"\r\n"+
+                " timeout:"+spiderInfo.getTimeout()+"\r\n"+
+                " priority:"+spiderInfo.getPriority()+"\r\n"+
+                " startURL:"+spiderInfo.getStartURL()+"\r\n"+
+                " callbackURL:"+spiderInfo.getCallbackURL()+"\r\n"+
+
+                " gatherFirstPage:"+spiderInfo.isGatherFirstPage()+"\r\n"+
+                " needTitle:"+spiderInfo.isNeedTitle()+"\r\n"+
+                " needContent:"+spiderInfo.isNeedContent()+"\r\n"+
+                " needPublishTime:"+spiderInfo.isNeedPublishTime()+"\r\n"+
+                " doNLP:"+spiderInfo.isDoNLP()+"\r\n"+
+                " saveCapture:"+spiderInfo.isSaveCapture()+"\r\n"+
+                " ajaxSite:"+spiderInfo.isAjaxSite()+"\r\n"+
+                " autoDetectPublishDate:"+spiderInfo.isAutoDetectPublishDate()
+        );
+
+        ResultBundle<String> resultBundle=spiderInfoService.update(spiderInfo);
         //logger.debug(resultBundle.getTraceId());
         return new ResponseEntity<ResultBundle<String>>(resultBundle, HttpStatus.OK);
     }

@@ -40,6 +40,7 @@ function spiderInfoListTranslater(spiderInfoList){
         tmp.show = 'show';
         tmp.go = 'go';
         tmp.delete = 'delete';
+        tmp.originData=spiderInfoList[i];
         data.push(tmp);
     }
     return data;
@@ -77,12 +78,13 @@ const getAllTemplates = (size,page) =>(dispatch)  => {
         });
 }
 
-const deleteReceive = (result) => dispatch => {
-    if(success){
+const deleteReceive = (returnValue) => dispatch => {
+    if(returnValue.result){
         dispatch(showInfo('success',"删除成功",""));
+        dispatch(getAllTemplates(15,1));
     }
     else {
-        dispatch(showInfo('error',"删除失败",""));
+        dispatch(showInfo('error',"删除失败",returnValue.errorMsg));
     }
 
 }
@@ -103,6 +105,49 @@ const deleteTemplateById= (id) =>(dispatch)  => {
             return dispatch(postError(err));
         });
 }
+
+
+
+
+//show record by record
+const showRecordDetail = (record) => (
+    {
+        type: types.LIST_SHOW_RECORD,
+        recordId:record.key,
+        recordDetail:'ID:' +record.key+'标题:' + record.title+"网站:"+record.domain+"时间:"+record.time
+    });
+
+ const showRecord = (record) => dispatch => {
+    dispatch(showRecordDetail(record));
+    dispatch(showInfo('success',"get records success","get records detail"));
+};
+
+const startTemplate = (fieldsValue) =>(dispatch)  => {
+    var param = { method: 'POST',
+        body:JSON.stringify(fieldsValue),
+        headers: {
+            "Content-Type": "application/json; charset=utf-8"
+        }
+    };
+    return fetch('/commons/spider/start/', param)
+    .then(function (response,fieldsValue) {
+        return response.json();
+    }).then(function (json) {
+        return dispatch(receivePosts(json));
+    }).catch(function (err) {
+        return dispatch(postError(err));
+    });
+
+}
+
+module.exports.actions={
+    getListDatas:getListDatas,
+    getAllTemplates:getAllTemplates,
+    showRecord:showRecord,
+    deleteTemplateById:deleteTemplateById,
+    startTemplate:startTemplate,
+};
+
 // const getAllTemplates = (size,page) =>(dispatch)  => {
 //
 //    // var url ="/springmvcspider/template/listAll?"+"size="+size+"&page="+page;
@@ -123,26 +168,3 @@ const deleteTemplateById= (id) =>(dispatch)  => {
 //             return dispatch(postError(err));
 //         });
 // }
-
-
-
-//show record by record
-const showRecordDetail = (record) => (
-    {
-        type: types.LIST_SHOW_RECORD,
-        recordId:record.key,
-        recordDetail:'ID:' +record.key+'标题:' + record.title+"网站:"+record.domain+"时间:"+record.time
-    });
-
- const showRecord = (record) => dispatch => {
-    dispatch(showRecordDetail(record));
-    dispatch(showInfo('success',"get records success","get records detail"));
-};
-
-
-module.exports.actions={
-    getListDatas:getListDatas,
-    getAllTemplates:getAllTemplates,
-    showRecord:showRecord,
-    deleteTemplateById:deleteTemplateById
-};

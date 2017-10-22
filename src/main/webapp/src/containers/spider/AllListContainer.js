@@ -4,7 +4,10 @@
 
 import { connect } from 'react-redux'
 import AllListComponent from '../../components/spider/AllListComponent'
-import { getListDatas,getAllTemplates,fetchPosts,showModel,showRecord,showInfo,hideInfo,deleteTemplateById } from '../../actions'
+import { getListDatas,fetchPosts,showModel,showRecord,showInfo,hideInfo,
+    getAllTemplates,editTemplate,startTemplate,
+
+    deleteTemplateById } from '../../actions'
 
 const mapStateToProps = (state) => ({
     listColumns: state.listColumns,
@@ -33,6 +36,13 @@ const mapDispatchToProps = (dispatch) => ({
     },
     hideInfo:()=>{
         dispatch(hideInfo())
+    },
+    editTemplate:(record) =>{
+        window.location.hash = "editSpiderInfo";
+        dispatch(editTemplate(record.originData));
+    },
+    startTemplate:(record) =>{
+        dispatch(startTemplate(record.originData));
     },
 });
 

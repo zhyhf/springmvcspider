@@ -16,7 +16,7 @@ export const INVALIDATE_REDDIT = 'INVALIDATE_REDDIT'
 //editSpiderInfoActions
 export const SAVE_TEMPLATE='SAVE_TEMPLATE'
 export const FORM_VISIABLE='FORM_VISIABLE'
-//export const RECEIVE_POSTS='RECEIVE_POSTS'
+export const INIT_TEMPLATE='INIT_TEMPLATE'
 
 
 //listActions

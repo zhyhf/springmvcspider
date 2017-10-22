@@ -34,6 +34,8 @@ const SearchInput = React.createClass({
             this.props.onSearch(this.state.value);
         }
     },
+     
+  
     render() {
         const { style, size, placeholder } = this.props;
         const btnCls = classNames({
@@ -70,8 +72,15 @@ export default class AllListComponent extends React.Component{
         const { showModal } = this.props;
         showModal(true);
     }
+      componentDidMount(){
+        this.refreshTables();
+    }
+    componentDidUpdate(){
+        this.refreshTables();
+    }
+
     getOperationColumn(){
-        const {showRecord,deleteTemplateById} = this.props;
+        const {showRecord,editTemplate,deleteTemplateById,startTemplate} = this.props;
         var operationColumns=
         [
             {
@@ -87,14 +96,14 @@ export default class AllListComponent extends React.Component{
                 )
             },
             {
-                title: '跳转',
-                    dataIndex: 'go',
-                    key: 'go',
+                title: '编辑',
+                    dataIndex: 'edit',
+                    key: 'edit',
                     render: (text, record) => (
                         <span>
                         <a href="javascript:void(0)" onClick={function(record){
-                            alert('key:' + record.key+"网站:"+record.domain+"时间:"+record.time)
-                        }.bind(this, record)}>go</a>
+                            editTemplate(record)
+                        }.bind(this, record)}>edit</a>
                         </span>
                     )
             },
@@ -109,7 +118,31 @@ export default class AllListComponent extends React.Component{
                         }.bind(this, record)}>delete</a>
                         </span>
                     )
-            }
+            },
+            {
+            title: '启动',
+                dataIndex: 'start',
+                key: 'start',
+                render: (text, record) => (
+                    <span>
+                    <a href="javascript:void(0)" onClick={function(record){
+                        startTemplate(record)
+                    }.bind(this, record)}>启动</a>
+                    </span>
+                )
+            },
+            {
+                title: '定时任务',
+                    dataIndex: 'startTimeTask',
+                    key: 'startTimeTask',
+                    render: (text, record) => (
+                    <span>
+                    <a href="javascript:void(0)" onClick={function(record){
+                        alert('key:' + record.key+"网站:"+record.domain+"时间:"+record.time)
+                    }.bind(this, record)}>创建定时任务</a>
+                    </span>
+                    )
+            },
         ];
         return operationColumns;
     }

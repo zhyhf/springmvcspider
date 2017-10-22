@@ -31,10 +31,10 @@ export default class SiderMenu extends React.Component {
       >
        <SubMenu key="sub1" title={<span><Icon type="mail" /><span>爬虫功能</span></span>}>
             <Menu.Item key="editSpiderInfo">编辑模板</Menu.Item>
+            <Menu.Item key="listSpiderInfo">模板列表</Menu.Item>
             <Menu.Item key="list">搜索</Menu.Item>
             <Menu.Item key="domainList">网站列表</Menu.Item>
             <Menu.Item key="tasks">查看进度</Menu.Item>
-            <Menu.Item key="listSpiderInfo">模板列表</Menu.Item>
             <Menu.Item key="updateBySpiderInfoID">更新数据</Menu.Item>
             <Menu.Item key="listQuartz">定时任务管理</Menu.Item>
             <Menu.Item key="TableContainer">表格管理</Menu.Item>

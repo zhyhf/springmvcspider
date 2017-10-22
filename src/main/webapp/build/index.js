@@ -501,6 +501,11 @@ var SiderMenu = function (_React$Component) {
           ),
           _react2.default.createElement(
             _antd.Menu.Item,
+            { key: 'listSpiderInfo' },
+            '\u6A21\u677F\u5217\u8868'
+          ),
+          _react2.default.createElement(
+            _antd.Menu.Item,
             { key: 'list' },
             '\u641C\u7D22'
           ),
@@ -513,11 +518,6 @@ var SiderMenu = function (_React$Component) {
             _antd.Menu.Item,
             { key: 'tasks' },
             '\u67E5\u770B\u8FDB\u5EA6'
-          ),
-          _react2.default.createElement(
-            _antd.Menu.Item,
-            { key: 'listSpiderInfo' },
-            '\u6A21\u677F\u5217\u8868'
           ),
           _react2.default.createElement(
             _antd.Menu.Item,
@@ -1115,6 +1115,7 @@ function spiderInfoListTranslater(spiderInfoList) {
         tmp.show = 'show';
         tmp.go = 'go';
         tmp.delete = 'delete';
+        tmp.originData = spiderInfoList[i];
         data.push(tmp);
     }
     return data;
@@ -1158,12 +1159,13 @@ var getAllTemplates = function getAllTemplates(size, page) {
     };
 };
 
-var deleteReceive = function deleteReceive(result) {
+var deleteReceive = function deleteReceive(returnValue) {
     return function (dispatch) {
-        if (success) {
+        if (returnValue.result) {
             dispatch(showInfo('success', "删除成功", ""));
+            dispatch(getAllTemplates(15, 1));
         } else {
-            dispatch(showInfo('error', "删除失败", ""));
+            dispatch(showInfo('error', "删除失败", returnValue.errorMsg));
         }
     };
 };
@@ -1185,6 +1187,49 @@ var deleteTemplateById = function deleteTemplateById(id) {
         });
     };
 };
+
+//show record by record
+var showRecordDetail = function showRecordDetail(record) {
+    return {
+        type: types.LIST_SHOW_RECORD,
+        recordId: record.key,
+        recordDetail: 'ID:' + record.key + '标题:' + record.title + "网站:" + record.domain + "时间:" + record.time
+    };
+};
+
+var showRecord = function showRecord(record) {
+    return function (dispatch) {
+        dispatch(showRecordDetail(record));
+        dispatch(showInfo('success', "get records success", "get records detail"));
+    };
+};
+
+var startTemplate = function startTemplate(fieldsValue) {
+    return function (dispatch) {
+        var param = { method: 'POST',
+            body: JSON.stringify(fieldsValue),
+            headers: {
+                "Content-Type": "application/json; charset=utf-8"
+            }
+        };
+        return fetch('/commons/spider/start/', param).then(function (response, fieldsValue) {
+            return response.json();
+        }).then(function (json) {
+            return dispatch(receivePosts(json));
+        }).catch(function (err) {
+            return dispatch(postError(err));
+        });
+    };
+};
+
+module.exports.actions = {
+    getListDatas: getListDatas,
+    getAllTemplates: getAllTemplates,
+    showRecord: showRecord,
+    deleteTemplateById: deleteTemplateById,
+    startTemplate: startTemplate
+};
+
 // const getAllTemplates = (size,page) =>(dispatch)  => {
 //
 //    // var url ="/springmvcspider/template/listAll?"+"size="+size+"&page="+page;
@@ -1205,30 +1250,6 @@ var deleteTemplateById = function deleteTemplateById(id) {
 //             return dispatch(postError(err));
 //         });
 // }
-
-
-//show record by record
-var showRecordDetail = function showRecordDetail(record) {
-    return {
-        type: types.LIST_SHOW_RECORD,
-        recordId: record.key,
-        recordDetail: 'ID:' + record.key + '标题:' + record.title + "网站:" + record.domain + "时间:" + record.time
-    };
-};
-
-var showRecord = function showRecord(record) {
-    return function (dispatch) {
-        dispatch(showRecordDetail(record));
-        dispatch(showInfo('success', "get records success", "get records detail"));
-    };
-};
-
-module.exports.actions = {
-    getListDatas: getListDatas,
-    getAllTemplates: getAllTemplates,
-    showRecord: showRecord,
-    deleteTemplateById: deleteTemplateById
-};
 
 /***/ }),
 
@@ -1254,19 +1275,14 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * Created by Administrator on 2017/9/15.
  */
 var showInfo = _messageActions2.default.actions.showInfo;
-var nextTodoId = 100;
-// const updateFormDetail = (value) => (
-//     {
-//         type: types.SAVE_TEMPLATE,
-//         formDetail:value
-//     }
-// )
+//let nextTodoId = 100;
+
 
 var receivePosts = function receivePosts(value) {
     return function (dispatch) {
         if (value.errorMsg == null) {
             dispatch(showInfo('success', "添加成功", "添加成功，模板ID为:" + value.result));
-            //dispatch(updateFormDetail(value.result));
+            window.location.hash = "listSpiderInfo";
         } else {
             dispatch(showInfo('error', "添加失败", "添加失败，错误信息:" + value.errorMsg));
         }
@@ -1288,18 +1304,12 @@ var saveTemplate = function saveTemplate(fieldsValue) {
             }
         };
         return fetch('/springmvcspider/template/save/', param).then(function (response, fieldsValue) {
-            console.debug(fieldsValue);
             return response.json();
         }).then(function (json) {
             return dispatch(receivePosts(json));
         }).catch(function (err) {
             return dispatch(postError(err));
         });
-
-        // return fetch('/springmvcspider/template/',myInit)
-        //     .then(response => response.json())
-        //     .then(json => dispatch(receivePosts(json)))
-        //     .catch(err=>dispatch(postError(err)))
     };
 };
 
@@ -1314,60 +1324,40 @@ var showAllSeting = function showAllSeting() {
     };
 };
 
+var editTemplate = function editTemplate(template) {
+    return {
+        type: types.INIT_TEMPLATE,
+        template: template
+    };
+};
+var updateTemplate = function updateTemplate(fieldsValue) {
+    return function (dispatch) {
+        var param = { method: 'POST',
+            body: JSON.stringify(fieldsValue),
+            headers: {
+                "Content-Type": "application/json; charset=utf-8"
+            }
+        };
+        return fetch('/springmvcspider/template/update/', param).then(function (response, fieldsValue) {
+            return response.json();
+        }).then(function (json) {
+            return dispatch(receivePosts(json));
+        }).catch(function (err) {
+            return dispatch(postError(err));
+        });
+    };
+};
 module.exports.actions = {
     saveFormData: saveFormData,
-    showAllSeting: showAllSeting
+    showAllSeting: showAllSeting,
+    editTemplate: editTemplate,
+    updateTemplate: updateTemplate
 };
 
-// const saveTemplate = (fieldsValue) => (
-//     {
-//         type: types.SAVE_TEMPLATE,
-//         formDetail:'siteName:' +fieldsValue.siteName+'domain:' + fieldsValue.domain+"startUrl:"+fieldsValue.startUrl+"agreement:"+fieldsValue.agreement
-//     });
-
-//'${pageContext.request.contextPath}/commons/spider/testSpiderInfo'
-// const saveTemplate = (fieldsValue) => dispatch => {
-//    return fetch('spider/commons/spider/testSpiderInfo',{type:"get"})
-//        .then(response => response.json())
-//        .then(json => dispatch(receivePosts(reddit, json)))
-//    .catch(err=>dispatch(postError(err)))
-// }
-
-
-// const saveTemplate = (fieldsValue) =>(fieldsValue,dispatch)  => {
-//     var myInit = { method: 'get',
-//         body: fieldsValue,
-//         cache: 'default' };
-//     return fetch('/webbf/users/',myInit)
-//         .then(response => response.json())
-//         .then(json => dispatch(receivePosts(json)))
-//         .catch(err=>dispatch(postError(err)))
-// }
-
-// const saveTemplate = (fieldsValue) =>(fieldsValue,dispatch)  => {
-//     console.log(fieldsValue);
-//     var myInit = { method: 'POST',
-//         body: JSON.stringify({'field':"aaaa"}),
-//         headers: {
-//             "Content-Type": "application/json"
-//         },
-//         cache: 'default' };
-//     return fetch('/webbf/template/',myInit)
-//         .then(response => response.json())
-//         .then(json => dispatch(receivePosts(json)))
-//         .catch(err=>dispatch(postError(err)))
-// }
-
-// function createGist(opts) {
-//     fetch('/springmvcspider/template/', {
-//         method: 'post',
-//         body: JSON.stringify(opts)
-//     }).then(function(response) {
-//         return response.json();
-//     }).then(function(data) {
-//
-//     });
-// }
+// return fetch('/springmvcspider/template/',myInit)
+//     .then(response => response.json())
+//     .then(json => dispatch(receivePosts(json)))
+//     .catch(err=>dispatch(postError(err)))
 
 /***/ }),
 
@@ -1424,6 +1414,13 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
         },
         hideInfo: function hideInfo() {
             dispatch((0, _actions.hideInfo)());
+        },
+        editTemplate: function editTemplate(record) {
+            window.location.hash = "editSpiderInfo";
+            dispatch((0, _actions.editTemplate)(record.originData));
+        },
+        startTemplate: function startTemplate(record) {
+            dispatch((0, _actions.startTemplate)(record.originData));
         }
     };
 };
@@ -1558,13 +1555,25 @@ var AllListComponent = function (_React$Component) {
             showModal(true);
         }
     }, {
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            this.refreshTables();
+        }
+    }, {
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate() {
+            this.refreshTables();
+        }
+    }, {
         key: 'getOperationColumn',
         value: function getOperationColumn() {
             var _this2 = this;
 
             var _props2 = this.props,
                 showRecord = _props2.showRecord,
-                deleteTemplateById = _props2.deleteTemplateById;
+                editTemplate = _props2.editTemplate,
+                deleteTemplateById = _props2.deleteTemplateById,
+                startTemplate = _props2.startTemplate;
 
             var operationColumns = [{
                 title: '查看',
@@ -1584,9 +1593,9 @@ var AllListComponent = function (_React$Component) {
                     );
                 }
             }, {
-                title: '跳转',
-                dataIndex: 'go',
-                key: 'go',
+                title: '编辑',
+                dataIndex: 'edit',
+                key: 'edit',
                 render: function render(text, record) {
                     return _react2.default.createElement(
                         'span',
@@ -1594,9 +1603,9 @@ var AllListComponent = function (_React$Component) {
                         _react2.default.createElement(
                             'a',
                             { href: 'javascript:void(0)', onClick: function (record) {
-                                    alert('key:' + record.key + "网站:" + record.domain + "时间:" + record.time);
+                                    editTemplate(record);
                                 }.bind(_this2, record) },
-                            'go'
+                            'edit'
                         )
                     );
                 }
@@ -1614,6 +1623,40 @@ var AllListComponent = function (_React$Component) {
                                     deleteTemplateById(record.key);
                                 }.bind(_this2, record) },
                             'delete'
+                        )
+                    );
+                }
+            }, {
+                title: '启动',
+                dataIndex: 'start',
+                key: 'start',
+                render: function render(text, record) {
+                    return _react2.default.createElement(
+                        'span',
+                        null,
+                        _react2.default.createElement(
+                            'a',
+                            { href: 'javascript:void(0)', onClick: function (record) {
+                                    startTemplate(record);
+                                }.bind(_this2, record) },
+                            '\u542F\u52A8'
+                        )
+                    );
+                }
+            }, {
+                title: '定时任务',
+                dataIndex: 'startTimeTask',
+                key: 'startTimeTask',
+                render: function render(text, record) {
+                    return _react2.default.createElement(
+                        'span',
+                        null,
+                        _react2.default.createElement(
+                            'a',
+                            { href: 'javascript:void(0)', onClick: function (record) {
+                                    alert('key:' + record.key + "网站:" + record.domain + "时间:" + record.time);
+                                }.bind(_this2, record) },
+                            '\u521B\u5EFA\u5B9A\u65F6\u4EFB\u52A1'
                         )
                     );
                 }
@@ -1740,7 +1783,8 @@ var mapStateToProps = function mapStateToProps(state) {
         notifyIcon: state.notifyIcon,
         notifyTitle: state.notifyTitle,
         formDetail: state.formDetail,
-        formVisiable: state.formVisiable
+        formVisiable: state.formVisiable,
+        template: state.template
     };
 }; /**
     * Created by Administrator on 2017/9/17.
@@ -1749,7 +1793,11 @@ var mapStateToProps = function mapStateToProps(state) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     return {
         saveFormData: function saveFormData(fieldsValue) {
-            dispatch((0, _actions.saveFormData)(fieldsValue));
+            if (fieldsValue.id != undefined && fieldsValue.id != "") {
+                dispatch((0, _actions.updateTemplate)(fieldsValue));
+            } else {
+                dispatch((0, _actions.saveFormData)(fieldsValue));
+            }
         },
         showAllSeting: function showAllSeting() {
             dispatch((0, _actions.showAllSeting)());
@@ -1836,7 +1884,7 @@ var EditSpiderInfoForm = function (_React$Component) {
                     FormItem,
                     _extends({}, formItemLayout, { label: 'ID', hasFeedback: true }),
                     getFieldDecorator('id', { rules: [{ required: false, message: '请不要手动赋值', whitespace: true }]
-                    })(_react2.default.createElement(_antd.Input, null))
+                    })(_react2.default.createElement(_antd.Input, { disabled: true, placeholder: '\u8BF7\u4E0D\u8981\u624B\u52A8\u8D4B\u503C' }))
                 ),
                 _react2.default.createElement(
                     FormItem,
@@ -1865,8 +1913,7 @@ var EditSpiderInfoForm = function (_React$Component) {
                 _react2.default.createElement(
                     FormItem,
                     _extends({}, formItemLayout, { label: 'timeout', hasFeedback: true }),
-                    getFieldDecorator('timeout', { rules: [{ required: false, message: '', whitespace: true }]
-                    })(_react2.default.createElement(_antd.Input, null))
+                    getFieldDecorator('timeout')(_react2.default.createElement(_antd.Input, null))
                 ),
                 _react2.default.createElement(
                     FormItem,
@@ -2166,10 +2213,44 @@ var EditSpiderInfoComponent = function (_React$Component2) {
             showAllSeting();
         }
     }, {
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var template = this.props.template;
+
+            this.initTemplate(template);
+        }
+    }, {
         key: 'componentDidUpdate',
         value: function componentDidUpdate() {
+
             this.info();
             this.showFormDetail();
+        }
+    }, {
+        key: 'urlArrayToString',
+        value: function urlArrayToString(urlArray) {
+            if (urlArray == null) return null;
+            var result = urlArray.map(function (item) {
+                return "'" + item + "'";
+            });
+            var result2 = result.reduce(function (prev, cur, index, array) {
+                return prev + ',' + cur;
+            });
+            var result3 = '[' + result2 + ']';
+            return result3;
+        }
+    }, {
+        key: 'initTemplate',
+        value: function initTemplate(template) {
+            if (template == null) return;
+            template.startURL = this.urlArrayToString(template.startURL);
+            template.callbackURL = this.urlArrayToString(template.callbackURL);
+            template.thread = template.thread.toString();
+            template.retry = template.retry.toString();
+            template.maxPageGather = template.maxPageGather.toString();
+            template.timeout = template.timeout.toString();
+            template.sleep = template.sleep.toString();
+            this.refs.editForm.setFieldsValue(template);
         }
     }, {
         key: 'info',
@@ -2335,6 +2416,7 @@ var todoApp = (0, _redux.combineReducers)({
     //editSpiderInfo
     formDetail: _editSpiderInfoReducers2.default.reducers.formDetail,
     formVisiable: _editSpiderInfoReducers2.default.reducers.formVisiable,
+    template: _editSpiderInfoReducers2.default.reducers.template,
 
     //all list
     listColumns: _listReducers2.default.reducers.listColumns,
@@ -2537,9 +2619,22 @@ var formVisiable = function formVisiable() {
     }
 };
 
+var template = function template() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case types.INIT_TEMPLATE:
+            return action.template;
+        default:
+            return state;
+    }
+};
+
 module.exports.reducers = {
     formDetail: formDetail,
-    formVisiable: formVisiable
+    formVisiable: formVisiable,
+    template: template
 };
 
 /***/ }),
@@ -3487,7 +3582,7 @@ var go = exports.go = function go(n) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.showAllSeting = exports.saveFormData = exports.deleteTemplateById = exports.getAllTemplates = exports.showRecord = exports.getListDatas = exports.showModel = exports.getTableDatas = exports.fetchPosts = exports.hideInfo = exports.showInfo = undefined;
+exports.updateTemplate = exports.editTemplate = exports.showAllSeting = exports.saveFormData = exports.startTemplate = exports.deleteTemplateById = exports.getAllTemplates = exports.showRecord = exports.getListDatas = exports.showModel = exports.getTableDatas = exports.fetchPosts = exports.hideInfo = exports.showInfo = undefined;
 
 var _react = __webpack_require__(0);
 
@@ -3526,10 +3621,13 @@ var getListDatas = exports.getListDatas = _listActions2.default.actions.getListD
 var showRecord = exports.showRecord = _listActions2.default.actions.showRecord;
 var getAllTemplates = exports.getAllTemplates = _listActions2.default.actions.getAllTemplates;
 var deleteTemplateById = exports.deleteTemplateById = _listActions2.default.actions.deleteTemplateById;
+var startTemplate = exports.startTemplate = _listActions2.default.actions.startTemplate;
 
 //editSpiderInfo
 var saveFormData = exports.saveFormData = _editSpiderInfoActions2.default.actions.saveFormData;
 var showAllSeting = exports.showAllSeting = _editSpiderInfoActions2.default.actions.showAllSeting;
+var editTemplate = exports.editTemplate = _editSpiderInfoActions2.default.actions.editTemplate;
+var updateTemplate = exports.updateTemplate = _editSpiderInfoActions2.default.actions.updateTemplate;
 
 /***/ }),
 
@@ -5232,7 +5330,7 @@ var ManageApp = function ManageApp() {
             _reactRouter.Route,
             { path: '/', component: _home2.default },
             _react2.default.createElement(_reactRouter.Route, { path: 'TableContainer', component: _TableContainer2.default }),
-            _react2.default.createElement(_reactRouter.Route, { path: 'list', component: _AllListContainer2.default }),
+            _react2.default.createElement(_reactRouter.Route, { path: 'listSpiderInfo', component: _AllListContainer2.default }),
             _react2.default.createElement(_reactRouter.Route, { path: 'editSpiderInfo', component: _EditSpiderInfoContainer2.default })
         )
     );
@@ -6369,8 +6467,7 @@ var INVALIDATE_REDDIT = exports.INVALIDATE_REDDIT = 'INVALIDATE_REDDIT';
 //editSpiderInfoActions
 var SAVE_TEMPLATE = exports.SAVE_TEMPLATE = 'SAVE_TEMPLATE';
 var FORM_VISIABLE = exports.FORM_VISIABLE = 'FORM_VISIABLE';
-//export const RECEIVE_POSTS='RECEIVE_POSTS'
-
+var INIT_TEMPLATE = exports.INIT_TEMPLATE = 'INIT_TEMPLATE';
 
 //listActions
 var LIST_SHOW_RECORD = exports.LIST_SHOW_RECORD = 'LIST_SHOW_RECORD';

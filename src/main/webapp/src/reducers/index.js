@@ -24,6 +24,7 @@ const todoApp = combineReducers({
     //editSpiderInfo
     formDetail:editSpiderInfoReducers.reducers.formDetail,
     formVisiable:editSpiderInfoReducers.reducers.formVisiable,
+    template:editSpiderInfoReducers.reducers.template,
 
     //all list
     listColumns:listReducers.reducers.listColumns,
